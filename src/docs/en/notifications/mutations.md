@@ -15,155 +15,70 @@ Mutations require authentication in the form of the user's valid GCaccount acces
 
 ### Notification mutations
 
-Available arguments to send in a mutation:
-
-* `gcId` *a user's identifier* (string)
-* `data` *an object with values to modify* (dict)
-  * `name` *user's name* (string)
-  * `email` *user's email* (string)
-  * `titleEn` *user's English position title* (string)
-  * `titleFr` *user's French position title* (string)
-  * `mobilePhone` *mobile phone number* (string)
-  * `officePhone` *office phone number* (string)
-  * `address` *user's work address* (address object)
-    * `streetAddress` (string)
-    * `city` (string)
-    * `province` (string)
-    * `postalCode` (string)
-    * `country` (string)
-  * `team` *team object of associated team* (team object)
-    * `id` *a team's unique identifier* (string)
-
-Example mutation using all available arguments:
-
-```javascript
-    mutation{
-        modifyProfile(
-            gcId:2,
-            profileInfo:{
-            name:"string",
-            email:"string",
-            titleEn:"string",
-            titleFr:"string",
-            mobilePhone:"string",
-            officePhone:"string",
-            address:{
-                streetAddress:"string",
-                city:"string",
-                province:"string",
-                postalCode:"string",
-                country:"string",
-            },
-            team:{
-                id:1243
-            }
-        }
-        )
-    }
-```
-
-### Team mutations
-
-#### Create a team
+#### Create a Notification
 
 Available arguments to send in a mutation:
 
-* `nameEn` *English name of team* (string)
-* `nameFr` *French name of team* (string)
-* `descriptionEn` *English description of team* (string)
-* `descrtiptionFr` *French description of team* (string)
-* `organization` *organization object unique identifier* (organization object)
-* `owner` *unique user who owns the team. Can be identified by email or by gcID* (profile object)
+* `appID` *application id as identified in GCaccount* (string)
+* `actionLink` *url to page where notification can be actioned* (string)
+* `actionLevel` *enum list of either `NoUserAction`, `Featured`, or `UserActionRequired`* (enum)
+* `email` *email notification object* (email notification object)
+* `online` *online notification object* (online notification object)
+* `whoDunIt` *object that defines who or what generated the event* (whoDunIt object)
 
-Example mutation to create an OrgTier:
+Example mutation to create a Notification with both and online and email component:
 
 ```javascript
     mutation{
-        createOrgTier(
-            nameEn:"string",
-            nameFr:"string",
-            descriptionEn:"English Description",
-            descriptionFR:"French Description",
-            organization:{
-                id:1243
+        createNotification(
+            appID:"651368451sasedf",
+            actionLink:"https://app.somewhere.ca/89413268416",
+            actionLevel: "UserActionRequired",
+            email:{
+                from:"noreply.somewhere.ca",
+                to:"user@somewhere.com",
+                subject:"You really need to action this",
+                body:"Something that you really neeed to do",
+                html: False
             },
-            owner:{
-                gcID:"5433245",
-                email:"joe.smith@canada.ca"
+            online:{
+                titleEn: "Something you need to do",
+                titleFr: "Quelque chose que vous devez faire",
+                descriptionEn: "You really need to action this as soon as possible",
+                descriptionFr: "Vous devez vraiment agir dès que possible"                
+            },
+            whoDunIt:{
+                teamID: "861a3sdf6815asdf"
             }
-         )
+         ){
+             id,
+             online{
+                 viewed
+             }
+         }
     }
 ```
 
-#### Modify a team
+#### Modify a Notification
 
 Available arguments to send in a mutation:
 
 * `id` *unique identifier of the team to modify* (int)
-* `data` *object of information to modify* (dict)
-  * `nameEn` *English name of team* (string)
-  * `nameFr` *French name of team* (string)
-  * `descriptionEn` *English description of team* (string)
-  * `descrtiptionFr` *French description of team* (string)
-  * `organization` *organization object unique identifier* (organization object)
-  * `owner` *unique user who owns the team. Can be identified by email or by gcID* (profile object)
+* `online` *online notification object* (online notification object)
 
-Example mutation to modify an OrgTier:
+Example mutation to modify a Notification
 
 ```javascript
     mutation{
-        modifyOrgTier(
+        updateNotification(
             id:2,
-            nameEn:"string",
-            nameFr:"string",
-            descriptionEn:"English Description",
-            descriptionFR:"French Description",
-            organization:{
-                id:1243
-            },
-            owner:{
-                gcID:"5433245",
-                email:"joe.smith@canada.ca"
+            online:{
+                viewed: True
             }
-        )
-    }
-```
-
-#### Delete a team
-
-Available arguments to send in a mutation:
-
-* `id` *unique identifier of the team* (int)
-
-Example mutation to delete an OrgTier:
-
-```javascript
-    mutation{
-        deleteOrgTier(
-            id:6
-            )
-    }
-```
-
-### Approvals
-
-Available arguments to send in a mutation:
-
-* `id` *unique identifier of the approval to modify* (int)
-* `data` *object that contains changes to apply*
-  * `status` *enum of either `Pending`, `Approved`, or `Denied` (enum)
-  * `deniedComment` *reason for setting status to `Denied` (string)
-
-Example mutation to modify Approval:
-
-```javascript
-    mutation{
-        modifyApproval(
-            id:23,
-            data:{
-                status: Denied
-                deniedComment: "blah"
-            }
-        )
+        ){
+            id,
+            online,
+            viewed
+        }
     }
 ```
